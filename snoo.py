@@ -1,11 +1,9 @@
-import re
 import sys
 import os
 import argparse
 
 from parser import SnoopParser
 from parser import SnoopConfig
-from pprint import pprint
 
 
 def handle_args():
