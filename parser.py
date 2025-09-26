@@ -5,7 +5,7 @@ from io import StringIO
 import textwrap
 import fields
 
-HEADER_REGEX = r"(?P<date>\d\d\d\d-\d\d-\d\d-\d\d:\d\d:\d\d.\d\d\d\+\d\d:\d\d)I----- thread\((?P<thread>\d\d)\) (?P<component>.+) (?P<file>.+:\d+:)(?P<remainder>.*)"
+HEADER_REGEX = r"(?P<date>\d\d\d\d-\d\d-\d\d-\d\d:\d\d:\d\d.\d\d\d\+\d\d:\d\d)I----- thread\((?P<thread>\d+)\) (?P<component>.+) (?P<file>.+:\d+:)(?P<remainder>.*)"
 SUMMARY_REGEX = r"Thread (?P<thread>\d+); fd (?P<fd>\d+); local (?P<local>.+); remote (?P<remote>.+)"
 DATA_REGEX = r"^0x[a-zA-Z0-9]{4}"
 LIMITTER = "----------------------------------------"
