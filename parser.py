@@ -6,7 +6,7 @@ import textwrap
 import fields
 
 HEADER_REGEX = r"(?P<date>\d\d\d\d-\d\d-\d\d-\d\d:\d\d:\d\d.\d\d\d\+\d\d:\d\d)I----- thread\((?P<thread>\d+)\) (?P<component>.+) (?P<file>.+:\d+:)(?P<remainder>.*)"
-SUMMARY_REGEX = r"Thread (?P<thread>\d+); fd (?P<fd>\d+); local (?P<local>.+); remote (?P<remote>.+)"
+SUMMARY_REGEX = r"Thread (?P<thread>\d+); fd (?P<fd>\d+);(?P<remainder>.*)"
 DATA_REGEX = r"^0x[a-zA-Z0-9]{4}"
 LIMITTER = "----------------------------------------"
 START_OF_TEXT = 56
@@ -47,6 +47,8 @@ class Entry:
     def __str__(self):
         if self.header.is_error():  # ErrorEntry
             return "{}".format(self.header)
+        elif not self.summary.has_action():  # SummaryEntry
+            return "{}\n{}\n{}\n{}\n".format(self.header, LIMITTER, self.summary, LIMITTER)
         elif self.action.has_data():  # DataEntry
             return "{}\n{}\n{}\n{}\n{}\n{}\n".format(self.header, LIMITTER, self.summary, self.action, self.data, LIMITTER)
         else:  # ActionEntry
@@ -102,7 +104,10 @@ class SnoopParser:
                 case State.Summary:
                     if self.summary_re.search(line):
                         summary = fields.Summary(self.summary_re, line)
-                        state = State.Action
+                        if summary.has_action():
+                            state = State.Action
+                        else:
+                            state = State.ClosingLimit
                 case State.Action:
                     action = fields.Action(line)
                     if action.has_data():

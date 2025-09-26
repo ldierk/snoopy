@@ -2,17 +2,19 @@ from datetime import datetime
 DATE_FORMAT = r"%Y-%m-%d-%H:%M:%S.%f%z"
 DATE_FORMAT_OUT = r"%Y-%m-%d-%H:%M:%S.%f"
 
+
 def fix_date(date):
-    #limit milliseconds to 3 digits
+    # limit milliseconds to 3 digits
     datestr = date.strftime(DATE_FORMAT_OUT)
     datestr = datestr[:-3]
-    #insert a colon between hour and minutes in the timezone offset
+    # insert a colon between hour and minutes in the timezone offset
     tz = date.strftime("%z")
     tz = tz[:3] + ":" + tz[3:]
-    return "{}{}".format(datestr,tz)
+    return "{}{}".format(datestr, tz)
+
 
 class Header:
-    def __init__(self,re,line):
+    def __init__(self, re, line):
         matches = re.search(line)
         self.date = datetime.strptime(matches.group("date"), DATE_FORMAT)
         self.thread = int(matches.group("thread"))
@@ -26,19 +28,23 @@ class Header:
     def __str__(self):
         return "{}I----- thread({}) {} {} {}".format(fix_date(self.date), self.thread,  self.component,  self.source_file, self.error_message)
 
+
 class Summary:
     def __init__(self, re, line):
         matches = re.search(line)
         self.thread = int(matches.group("thread"))
         self.fd = int(matches.group("fd"))
-        self.local = matches.group("local")
-        self.remote = matches.group("remote")
-    
+        self.message = matches.group("remainder").strip()
+
+    def has_action(self):
+        return not self.message.startswith("failed")
+
     def __str__(self):
-        return "Thread {}; fd {}; local {}; remote {}".format(self.thread,self.fd,self.local,self.remote)
+        return "Thread {}; fd {}; {}".format(self.thread, self.fd, self.message)
+
 
 class Action:
-    def __init__(self,line):
+    def __init__(self, line):
         self.action = line
 
     def has_data(self) -> bool:
