@@ -1,5 +1,6 @@
 import re
 import sys
+import os
 import argparse
 
 from parser import SnoopParser
@@ -23,10 +24,15 @@ def handle_args():
 
 
 def main() -> int:
-    config = handle_args()
-    parser = SnoopParser(config)
-    for entry in parser:
-        print(entry)
+    try:
+        config = handle_args()
+        parser = SnoopParser(config)
+        for entry in parser:
+            print(entry)
+    # handle the error output when piping
+    except BrokenPipeError:
+        devnull = os.open(os.devnull, os.O_WRONLY)
+        os.dup2(devnull, sys.stdout.fileno())
     return 0
 
 
