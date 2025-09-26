@@ -79,6 +79,8 @@ class SnoopParser:
                 y = entry.header.thread
                 if entry.header.thread in self.filter:
                     return entry
+            else:
+                return entry
         return None
 
     def parse_next(self) -> Entry:
