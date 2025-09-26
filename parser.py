@@ -107,6 +107,7 @@ class SnoopParser:
                         if summary.has_action():
                             state = State.Action
                         else:
+                            action = None
                             state = State.ClosingLimit
                 case State.Action:
                     action = fields.Action(line)
